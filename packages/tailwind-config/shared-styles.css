@@ -1,6 +1,8 @@
 @import "tailwindcss";
 /* Default design system */
 @source "../../packages/ui/src";
+@source "../../app/web/src";
+@source "../../app/docs/src";
 
 :root {
   --background: rgb(253, 246, 227);
