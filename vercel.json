@@ -1,0 +1,17 @@
+{
+  "version": 2,
+  "github": {
+    "silent": false,
+    "autoJobCancelation": true
+  },
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "build": {
+    "env": {
+      "GIT_LFS_SKIP_SMUDGE": "1"
+    }
+  }
+}
