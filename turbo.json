@@ -1,9 +1,9 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
-  "globalEnv": ["DOCS_DOMAIN"],
   "tasks": {
     "build": {
+      "env": ["DOCS_DOMAIN"],
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
