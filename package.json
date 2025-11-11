@@ -3,9 +3,6 @@
   "private": true,
   "scripts": {
     "build": "turbo run build",
-    "build:fe-docs": "bash scripts/build-with-submodules.sh fe-docs",
-    "build:fe-home": "bash scripts/build-with-submodules.sh fe-home",
-    "postinstall": "git submodule update --init --recursive || true",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "check-types": "turbo run check-types",
