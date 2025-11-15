@@ -18,6 +18,18 @@ const nextConfig: NextConfig = {
         source: "/docs-static/:path+",
         destination: `${process.env.DOCS_DOMAIN}/docs-static/:path+`,
       },
+      {
+        source: "/animation",
+        destination: `${process.env.ANIMATION_DOMAIN}/animation`,
+      },
+      {
+        source: "/animation/:path+",
+        destination: `${process.env.ANIMATION_DOMAIN}/animation/:path+`,
+      },
+      {
+        source: "/animation-static/:path+",
+        destination: `${process.env.ANIMATION_DOMAIN}/animation-static/:path+`,
+      },
     ];
   },
   transpilePackages: ["@repo/ui"],
