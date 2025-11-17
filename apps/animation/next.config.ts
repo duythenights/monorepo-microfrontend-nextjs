@@ -5,18 +5,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   basePath: "/animation",
-  assetPrefix: "/animation-static",
-  async rewrites() {
-    return {
-      beforeFiles: [
-        {
-          source: "/animation-static/_next/:path*",
-          destination: "/_next/:path*",
-        },
-      ],
-    };
+  images: {
+    loader: "custom",
+    loaderFile: "./image-loader.ts",
   },
-
   transpilePackages: ["@repo/ui"],
 };
 
