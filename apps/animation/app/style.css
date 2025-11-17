@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+p {
+  @apply text-[13px] opacity-80 font-bold;
+}
+
+p#logo {
+  @apply opacity-100;
+}
+
+.slider-wrapper {
+  @apply fixed w-screen h-screen overflow-hidden;
+}
+
+canvas {
+  @apply fixed top-0 left-0 w-full h-full;
+}
+
+.overlay {
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0) 75%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: 1;
+}
