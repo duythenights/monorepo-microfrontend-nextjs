@@ -20,6 +20,7 @@ export default function LeftFloatingButtons({
       <div className="fixed top-6 left-6 z-50 flex gap-3">
         {/* Back to List Button */}
         <Link
+          title="Back to main"
           href={backToListLink}
           className="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center text-primary-foreground hover:shadow-xl hover:scale-110 transition-all duration-300 animate-float cursor-pointer"
         >
@@ -27,6 +28,7 @@ export default function LeftFloatingButtons({
         </Link>
         {/* Inspired Button */}
         <Link
+          title={`✨ Inspired By ${inspiredLink}`}
           href={inspiredLink}
           target="_blank"
           rel="noopener noreferrer"
