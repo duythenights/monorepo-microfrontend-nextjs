@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
     loader: "custom",
     loaderFile: "./image-loader.ts",
   },
-  transpilePackages: ["@repo/ui"],
+  transpilePackages: ["@repo/ui", "three"],
 };
 
 export default nextConfig;

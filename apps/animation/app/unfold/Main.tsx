@@ -8,10 +8,10 @@ import { useRef } from "react";
 
 export default function Main() {
   const images = [
-    "/images/unfold/1.jpg",
-    "/images/unfold/2.jpg",
-    "/images/unfold/3.jpg",
-    "/images/unfold/4.jpg",
+    "/images/unfold/1.webp",
+    "/images/unfold/2.webp",
+    "/images/unfold/3.webp",
+    "/images/unfold/4.webp",
   ];
 
   const spotlightRef = useRef<HTMLElement>(null);
