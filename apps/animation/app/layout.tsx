@@ -2,7 +2,6 @@ import { Header, TopLoader } from "@repo/ui";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import LeftFloatingButtons from "../components/floating-left-buttons";
 
 const geist = Geist({ subsets: ["latin"] });
 

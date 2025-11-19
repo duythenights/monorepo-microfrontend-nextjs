@@ -3,7 +3,61 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import Lenis from "lenis";
 
-const MAX_IMG = 7;
+const data = [
+  {
+    link: "/",
+    title: "Playful and Curious",
+    img: "/animation/images/3d-slide/0.webp",
+  },
+  {
+    link: "/",
+    title: "Calm and Serene",
+    img: "/animation/images/3d-slide/1.webp",
+  },
+  {
+    link: "/",
+    title: "Colorful and Lively",
+    img: "/animation/images/3d-slide/2.webp",
+  },
+  {
+    link: "/",
+    title: "Majestic and Free",
+    img: "/animation/images/3d-slide/3.webp",
+  },
+  {
+    link: "/",
+    title: "Mysterious and Graceful",
+    img: "/animation/images/3d-slide/4.webp",
+  },
+  {
+    link: "/",
+    title: "Glowing and Dreamy",
+    img: "/animation/images/3d-slide/5.webp",
+  },
+  {
+    link: "/",
+    title: "Tiny and Delicate",
+    img: "/animation/images/3d-slide/6.webp",
+  },
+  {
+    link: "/",
+    title: "Powerful and Swift",
+    img: "/animation/images/3d-slide/7.webp",
+  },
+  {
+    link: "/",
+    title: "Elegant and Social",
+    img: "/animation/images/3d-slide/8.webp",
+  },
+  {
+    link: "/",
+    title: "Quiet and Enigmatic",
+    img: "/animation/images/3d-slide/9.webp",
+  },
+];
+
+const extra = 2;
+const MAX_IMG = data.length - extra + 1;
 
 export default function Main() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -30,38 +84,32 @@ export default function Main() {
     let loadedImageCount = 0;
 
     function loadImages() {
-      for (let i = 0; i <= MAX_IMG; i++) {
+      for (let i = 0; i < data.length; i++) {
         const img = new Image();
 
         img.onload = function () {
-          images.push(img);
+          images[i] = img; // <-- GIỮ ĐÚNG INDEX
           loadedImageCount++;
-          setProgress(Math.round((loadedImageCount / (MAX_IMG + 1)) * 100));
+          setProgress(Math.round((loadedImageCount / data.length) * 100));
 
-          if (loadedImageCount === MAX_IMG) {
+          if (loadedImageCount === data.length) {
             initializeScene();
-
-            // Bắt đầu animation zoom-out
             setAnimateOut(true);
-
-            // Đợi animation chạy rồi remove overlay
-            setTimeout(() => {
-              setLoading(false);
-            }, 800); // 800ms cho animation đẹp
+            setTimeout(() => setLoading(false), 800);
           }
         };
 
         img.onerror = function () {
           loadedImageCount++;
-          setProgress(Math.round((loadedImageCount / MAX_IMG) * 100));
+          setProgress(Math.round((loadedImageCount / data.length) * 100));
 
-          if (loadedImageCount === MAX_IMG) {
+          if (loadedImageCount === data.length) {
             initializeScene();
             setTimeout(() => setLoading(false), 300);
           }
         };
 
-        img.src = `/animation/images/${i}.webp`;
+        img.src = data?.[i]?.img as string;
       }
     }
 
@@ -157,26 +205,17 @@ export default function Main() {
       camera.lookAt(0, -2, 0);
       camera.rotation.z = THREE.MathUtils.degToRad(-5);
 
-      const sliderTitles = [
-        "Slide 1",
-        "Slide 2",
-        "Slide 3",
-        "Slide 4",
-        "Slide 5",
-      ];
-
       function updateTexture(offset: number = 0) {
         if (!ctx) return;
         ctx.fillStyle = "#000000";
         ctx.fillRect(0, 0, textureCanvas.width, textureCanvas.height);
 
-        const fontSize = 180;
+        const fontSize = 120;
         ctx.font = `${fontSize}px Arial`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const extraSlides = 2;
-        for (let i = -extraSlides; i < totalSlides + extraSlides; i++) {
+        for (let i = -extra; i < totalSlides + extra; i++) {
           let slideY = -i * (slideHeight + gap);
           slideY += offset * cycleHeight;
 
@@ -229,7 +268,7 @@ export default function Main() {
 
             ctx.fillStyle = "white";
             ctx.fillText(
-              sliderTitles[slideIndex] || `Slide ${slideIndex + 1}`,
+              `${data[slideIndex]?.title}`,
               textureCanvas.width / 2,
               wrappedY + slideRect.height / 2
             );
@@ -302,13 +341,6 @@ export default function Main() {
         className="relative w-full bg-black text-white"
         style={{ height: "500vh" }}
       >
-        <nav className="fixed top-0 w-full p-8 z-20 flex justify-between items-start">
-          <div>
-            <p className="text-2xl font-bold">duythenights</p>
-            <p className="text-sm mt-1">FE Enjoyer ✨</p>
-          </div>
-        </nav>
-
         <footer className="fixed bottom-0 left-0 w-full justify-between p-8 flex items-center z-20">
           <p>Experiment 1711</p>
           <p>&copy; 2025</p>
