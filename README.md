@@ -1,58 +1,91 @@
-# Turborepo Tailwind CSS starter
+# Monorepo microfrontends (Next.js + Turborepo)
 
-This Turborepo starter is maintained by the Turborepo core team.
+This repository is a compact, production-shaped example of a **monorepo** with **multiple Next.js applications** and a **shared UI package**. Each app can be built and deployed on its own; the **host** app can stitch public URLs together using rewrites so the product still feels unified.
 
-## Using this example
+---
 
-Run the following command:
+## Live demos
+
+| Service | Role | URL |
+| -------- | ------ | --- |
+| **Server Host** | Entry app; navigates to other surfaces | [https://fe-enjoyer.vercel.app/](https://fe-enjoyer.vercel.app/) |
+| **Services Docs** | Documentation shell (`basePath: /docs`) | [https://frontend-enjoyer-space-docs.vercel.app/docs](https://frontend-enjoyer-space-docs.vercel.app/docs) |
+| **Services Animation** | Additional surface with its own theme | [https://frontend-enjoyer-space-animation.vercel.app/animation](https://frontend-enjoyer-space-animation.vercel.app/animation) |
+
+---
+
+## Screenshots (production)
+
+**Server Host** — centered landing, CTAs, and top navigation to other services.
+
+![Server Host](https://res.cloudinary.com/dywhwi0ce/image/upload/v1774263960/host_h8pvrd.png)
+
+**Services Docs** — distinct typography and color tokens from the host.
+
+![Services Docs](https://res.cloudinary.com/dywhwi0ce/image/upload/v1774263960/docs_p6wgyq.png)
+
+**Services Animation** — third app with its own global styling.
+
+![Services Animation](https://res.cloudinary.com/dywhwi0ce/image/upload/v1774263961/animation_ropoq7.png)
+
+---
+
+## What “monorepo” means here
+
+- **One Git repository** holds every app and shared library.
+- **pnpm workspaces** wire local packages together without publishing to npm.
+- **Turborepo** runs scripts (build, lint, typecheck) across the graph with caching.
+
+Typical layout:
+
+- **`apps/web`** — host Next.js app.
+- **`apps/docs`** — docs Next.js app (served under `/docs` via `basePath`).
+- **`apps/animation`** — animation Next.js app (served under `/animation`).
+- **`packages/ui`** — shared React components (`@repo/ui`), consumed by all apps via `transpilePackages`.
+- **`packages/eslint-config`**, **`packages/typescript-config`**, **`packages/tailwind-config`** — shared tooling and Tailwind setup.
+
+---
+
+## What “microfrontend” means in this project
+
+There is no single definition of “microfrontend.” In this repo it means:
+
+1. **Separate deployable Next.js apps** — each has its own `app/` tree, fonts, and `globals.css` (design tokens). You can see different themes while the header and patterns from `@repo/ui` stay consistent.
+2. **Composition at the edge of the host** — `apps/web` uses **rewrites** in `next.config.ts` so paths like `/docs` and `/animation` proxy to the configured origins (`DOCS_DOMAIN`, `ANIMATION_DOMAIN`). That lets one hostname present multiple backends without iframes in the demo.
+3. **Shared design system** — primitives and features from `@repo/ui` avoid duplicating structure; **theming** still lives per app so each service looks intentionally different.
+
+The **docs** app uses Next.js `basePath: "/docs"` so it is correct when opened on the host (after rewrite) and when opened on its **own** Vercel URL.
+
+---
+
+## Local development
+
+From the repository root:
 
 ```sh
-npx create-turbo@latest -e with-tailwind
+pnpm install
+pnpm dev
 ```
 
-## What's inside?
+Convenient default ports (when running each app locally):
 
-This Turborepo includes the following packages/apps:
+| App | Port | Example URL |
+| --- | --- | --- |
+| Host (`web`) | 3000 | `http://localhost:3000` |
+| Docs | 3001 | `http://localhost:3001/docs` |
+| Animation | 3002 | (per your setup) |
 
-### Apps and Packages
+For rewrites and cross-links, set environment variables such as **`DOCS_DOMAIN`**, **`ANIMATION_DOMAIN`**, and **`NEXT_PUBLIC_WEB_ORIGIN`** on the host (and docs, where needed) so they point at your local or deployed origins.
 
-- `docs`: a [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `web`: another [Next.js](https://nextjs.org/) app with [Tailwind CSS](https://tailwindcss.com/)
-- `ui`: a stub React component library with [Tailwind CSS](https://tailwindcss.com/) shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+---
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## Tech stack
 
-### Building packages/ui
+- [Next.js](https://nextjs.org/) (App Router) · [React](https://react.dev/) · [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS v4](https://tailwindcss.com/) · [Turborepo](https://turbo.build/repo) · [pnpm](https://pnpm.io/)
 
-This example is set up to produce compiled styles for `ui` components into the `dist` directory. The component `.tsx` files are consumed by the Next.js apps directly using `transpilePackages` in `next.config.ts`. This was chosen for several reasons:
+---
 
-- Make sharing one `tailwind.config.ts` to apps and packages as easy as possible.
-- Make package compilation simple by only depending on the Next.js Compiler and `tailwindcss`.
-- Ensure Tailwind classes do not overwrite each other. The `ui` package uses a `ui-` prefix for it's classes.
-- Maintain clear package export boundaries.
+## Original Turborepo starter note
 
-Another option is to consume `packages/ui` directly from source without building. If using this option, you will need to update the `tailwind.config.ts` in your apps to be aware of your package locations, so it can find all usages of the `tailwindcss` class names for CSS compilation.
-
-For example, in [tailwind.config.ts](packages/tailwind-config/tailwind.config.ts):
-
-```js
-  content: [
-    // app content
-    `src/**/*.{js,ts,jsx,tsx}`,
-    // include packages if not transpiling
-    "../../packages/ui/*.{js,ts,jsx,tsx}",
-  ],
-```
-
-If you choose this strategy, you can remove the `tailwindcss` and `autoprefixer` dependencies from the `ui` package.
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [Tailwind CSS](https://tailwindcss.com/) for styles
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+This project started from the Turborepo “with Tailwind” example. The README above describes the **microfrontend and monorepo** shape of **this** codebase; for generic Turborepo usage, see the [Turborepo documentation](https://turbo.build/repo/docs).

@@ -1,18 +1,51 @@
 "use client";
-import { useState, useEffect } from "react";
-import { Button } from "@repo/ui";
-import { Menu, X, ChevronDown, Sun, Moon } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
+import { Sun, Moon } from "lucide-react";
+
+export type HeaderSite = "web" | "docs";
+
+type NavItem = { name: string; href: string };
+
 type Props = {
   onClickLink?: () => void;
+  /**
+   * Host app uses rewrites to `/docs` and `/animation`. Docs app uses `basePath` `/docs`.
+   */
+  site?: HeaderSite;
+  /**
+   * Absolute URL of the host app; used when `site` is `"docs"` for the “Server Host” link.
+   */
+  hostAppOrigin?: string;
 };
 
-export default function Header({ onClickLink }: Props) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [productsOpen, setProductsOpen] = useState(false);
+/**
+ * Sticky top bar with nav links centered on the full header width and a theme toggle on the right.
+ * @param onClickLink - Optional callback when a nav link is activated.
+ * @param site - `"web"` links to `/docs` and `/animation`; `"docs"` links back to the host origin.
+ * @param hostAppOrigin - Base URL for Server Host (e.g. from `NEXT_PUBLIC_WEB_ORIGIN` in the docs layout).
+ */
+export default function Header({
+  onClickLink,
+  site = "web",
+  hostAppOrigin = "http://localhost:3000",
+}: Props) {
   const [isDark, setIsDark] = useState(false);
 
+  const navigation = useMemo<NavItem[]>(() => {
+    if (site === "docs") {
+      return [
+        { name: "Services Docs", href: "/docs" },
+        { name: "Server Host", href: hostAppOrigin },
+      ];
+    }
+    return [
+      { name: "Server Host", href: "/" },
+      { name: "Services Docs", href: "/docs" },
+      { name: "Services Animation", href: "/animation" },
+    ];
+  }, [site, hostAppOrigin]);
+
   useEffect(() => {
-    // Check initial theme
     const theme = document.documentElement.classList.contains("dark");
     setIsDark(theme);
   }, []);
@@ -27,173 +60,60 @@ export default function Header({ onClickLink }: Props) {
     }
   };
 
-  const navigation = [
-    { name: "Home", href: "/" },
-    {
-      name: "Products",
-      href: "/products",
-      dropdown: [
-        { name: "All Products", href: "/products" },
-        { name: "New Arrivals", href: "/products/new" },
-        { name: "Best Sellers", href: "/products/best-sellers" },
-        { name: "Sale", href: "/products/sale" },
-      ],
-    },
-    { name: "About", href: "/about" },
-    { name: "Docs", href: "/docs" },
-    { name: "Animation", href: "/animation" },
-    { name: "Contact", href: "/contact" },
-  ];
+  const homeHref = site === "docs" ? "/docs" : "/";
 
   return (
-    <>
-      {/* Floating Buttons Container */}
-      <div className="fixed top-6 right-6 z-50 flex gap-3">
-        {/* Dark Mode Toggle Button */}
-        <button
-          onClick={toggleTheme}
-          className="w-14 h-14 bg-accent cursor-pointer rounded-full shadow-lg flex items-center justify-center text-accent-foreground hover:shadow-xl hover:scale-110 transition-all duration-300 animate-float-delayed relative overflow-hidden"
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 shadow-sm backdrop-blur-md supports-[backdrop-filter]:bg-background/80">
+      <div className="relative mx-auto flex h-14 max-w-6xl items-center justify-between px-4 sm:px-6">
+        <a
+          href={homeHref}
+          className="relative z-20 flex shrink-0 items-center gap-2 rounded-md outline-offset-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring"
         >
-          <div
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isDark ? "opacity-0 rotate-180 scale-0" : "opacity-100 rotate-0 scale-100"}`}
-          >
-            <Sun className="h-6 w-6" />
-          </div>
-          <div
-            className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${isDark ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-180 scale-0"}`}
-          >
-            <Moon className="h-6 w-6" />
-          </div>
-        </button>
+          <span className="rounded-md bg-primary px-2 py-1 font-mono text-xs font-bold text-primary-foreground sm:text-sm">
+            MFE
+          </span>
+          <span className="hidden text-sm font-semibold tracking-tight text-foreground sm:inline md:text-base">
+            Monorepo lab
+          </span>
+        </a>
 
-        {/* Hamburger Menu Button */}
-        <Button
-          onClick={() => {
-            onClickLink?.();
-            setMobileMenuOpen(!mobileMenuOpen);
-          }}
-          className="w-14 h-14 bg-primary rounded-full shadow-lg flex items-center justify-center text-primary-foreground hover:shadow-xl hover:scale-110 transition-all duration-300 animate-float cursor-pointer"
+        <nav
+          className="absolute left-1/2 top-1/2 z-10 max-w-[min(100%,calc(100vw-9rem))] -translate-x-1/2 -translate-y-1/2 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          aria-label="Main navigation"
         >
-          {mobileMenuOpen ? (
-            <X className="h-6 w-6" />
-          ) : (
-            <Menu className="h-6 w-6" />
-          )}
-        </Button>
-      </div>
-
-      {/* Fullscreen Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-background animate-in fade-in slide-in-from-right duration-300">
-          <div className="flex flex-col items-center justify-center h-full px-8 space-y-8">
-            {/* Logo */}
-            <div className="mb-8">
-              <a href="/" className="flex flex-col items-center space-y-2">
-                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center shadow-lg">
-                  <span className="text-primary-foreground font-bold text-3xl">
-                    L
-                  </span>
-                </div>
-                <span className="text-2xl font-bold text-foreground">Logo</span>
-              </a>
-            </div>
-
-            {/* Navigation */}
-            <nav className="w-full max-w-md space-y-4">
-              {navigation.map((item, index) => (
-                <div
-                  key={item.name}
-                  className="animate-in slide-in-from-right fade-in duration-500"
-                  style={{ animationDelay: `${index * 50}ms` }}
+          <ul className="flex items-center justify-center gap-0.5 whitespace-nowrap sm:gap-1 md:gap-2">
+            {navigation.map((item) => (
+              <li key={item.href} className="shrink-0">
+                <a
+                  href={item.href}
+                  onClick={() => onClickLink?.()}
+                  className="block rounded-md px-3 py-2 text-sm font-medium text-foreground transition-colors hover:bg-secondary hover:text-primary md:px-4 md:text-base"
                 >
-                  {item.dropdown ? (
-                    <div>
-                      <button
-                        onClick={() => setProductsOpen(!productsOpen)}
-                        className="w-full flex items-center justify-between text-foreground hover:text-primary px-6 py-4 rounded-xl text-xl font-semibold transition-all hover:bg-secondary"
-                      >
-                        {item.name}
-                        <ChevronDown
-                          className={`h-5 w-5 transition-transform duration-300 ${
-                            productsOpen ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-                      {productsOpen && (
-                        <div className="pl-6 mt-2 space-y-2 animate-in slide-in-from-top fade-in duration-300">
-                          {item.dropdown.map((subItem) => (
-                            <a
-                              key={subItem.name}
-                              href={subItem.href}
-                              className="block text-muted-foreground hover:text-primary px-6 py-3 rounded-lg text-lg transition-all hover:bg-secondary"
-                            >
-                              {subItem.name}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <a
-                      href={item.href}
-                      className="block text-foreground hover:text-primary px-6 py-4 rounded-xl text-xl font-semibold transition-all hover:bg-secondary"
-                    >
-                      {item.name}
-                    </a>
-                  )}
-                </div>
-              ))}
-            </nav>
+                  {item.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
-            {/* CTA Buttons */}
-            <div className="w-full max-w-md space-y-3 pt-8 animate-in slide-in-from-bottom fade-in duration-500 delay-300">
-              <a
-                href="/signin"
-                className="block text-center text-foreground hover:text-primary px-6 py-4 rounded-xl text-lg font-semibold border-2 border-border hover:border-primary transition-all"
-              >
-                Sign In
-              </a>
-              <a
-                href="/signup"
-                className="block text-center bg-primary text-primary-foreground px-6 py-4 rounded-xl text-lg font-semibold hover:shadow-lg hover:scale-105 transition-all"
-              >
-                Get Started
-              </a>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <style>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-10px);
-          }
-        }
-
-        @keyframes float-delayed {
-          0%,
-          100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-8px);
-          }
-        }
-
-        .animate-float {
-          animation: float 3s ease-in-out infinite;
-        }
-
-        .animate-float-delayed {
-          animation: float-delayed 3s ease-in-out infinite;
-          animation-delay: 0.5s;
-        }
-      `}</style>
-    </>
+        <button
+          type="button"
+          onClick={toggleTheme}
+          aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+          className="relative z-20 flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-accent text-accent-foreground transition-colors hover:bg-accent/80"
+        >
+          <span
+            className={`absolute transition-all duration-300 ${isDark ? "scale-0 opacity-0 rotate-90" : "scale-100 opacity-100 rotate-0"}`}
+          >
+            <Sun className="size-5" />
+          </span>
+          <span
+            className={`absolute transition-all duration-300 ${isDark ? "scale-100 opacity-100 rotate-0" : "scale-0 opacity-0 -rotate-90"}`}
+          >
+            <Moon className="size-5" />
+          </span>
+        </button>
+      </div>
+    </header>
   );
 }

@@ -39,7 +39,7 @@ const navigationItems = [
 export default function Page() {
   return (
     <div className="relative w-full bg-background font-bold text-primary h-screen">
-      <nav className="fixed top-0 w-full p-8 z-20 flex justify-between items-start">
+      <nav className="fixed top-10 w-full p-8 z-20 flex justify-between items-start">
         <div>
           <p className="text-2xl ">duythenights</p>
           <p className="text-sm mt-1">FE Enjoyer ✨</p>
