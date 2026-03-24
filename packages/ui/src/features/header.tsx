@@ -35,7 +35,7 @@ export default function Header({
     if (site === "docs") {
       return [
         { name: "Services Docs", href: "/docs" },
-        { name: "Server Host", href: hostAppOrigin },
+        { name: "Server Host", href: "/"},
       ];
     }
     return [

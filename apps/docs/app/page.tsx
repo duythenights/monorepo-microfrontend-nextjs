@@ -32,10 +32,10 @@ export default function Page() {
           </span>
         </p>
         <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-          <a href={hostOrigin} className={ctaBtnPrimary}>
+          <a href={"/"} className={ctaBtnPrimary}>
             Open Server Host
           </a>
-          <a href={hostAnimation} className={ctaBtnOutline}>
+          <a href={"/animation"} className={ctaBtnOutline}>
             Open Services Animation
           </a>
         </div>
